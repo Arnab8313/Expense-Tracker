@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
 import { convertDDMMYYYYToISO, convertISOToDDMMYYYY } from "@/lib/date-utils"
+import { CalendarIcon } from "lucide-react"
 
 const CATEGORIES = ["Food", "Travel", "Bills", "Shopping", "Entertainment", "Health", "Other"]
 const INCOME_CATEGORIES = ["Salary", "Freelance", "Investment", "Other"]
@@ -42,6 +45,11 @@ export function ExpenseForm({ editingId, onEditComplete }: ExpenseFormProps) {
     }
   })
 
+  const [selectedDate, setSelectedDate] = useState<Date>(() => {
+    const [day, month, year] = formData.date.split("/")
+    return new Date(Number.parseInt(year), Number.parseInt(month) - 1, Number.parseInt(day))
+  })
+
   const [customCategory, setCustomCategory] = useState(() => {
     if (editingId) {
       const expense = expenses.find((e) => e.id === editingId)
@@ -64,6 +72,7 @@ export function ExpenseForm({ editingId, onEditComplete }: ExpenseFormProps) {
         type: "expense",
       })
       setCustomCategory("")
+      setSelectedDate(new Date())
     }
   }, [editingId])
 
@@ -101,20 +110,18 @@ export function ExpenseForm({ editingId, onEditComplete }: ExpenseFormProps) {
         type: "expense",
       })
       setCustomCategory("")
+      setSelectedDate(new Date())
     }
   }
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, "")
-
-    if (value.length >= 2) {
-      value = value.slice(0, 2) + "/" + value.slice(2)
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      setSelectedDate(date)
+      const day = String(date.getDate()).padStart(2, "0")
+      const month = String(date.getMonth() + 1).padStart(2, "0")
+      const year = date.getFullYear()
+      setFormData({ ...formData, date: `${day}/${month}/${year}` })
     }
-    if (value.length >= 5) {
-      value = value.slice(0, 5) + "/" + value.slice(5, 9)
-    }
-
-    setFormData({ ...formData, date: value })
   }
 
   return (
@@ -224,14 +231,26 @@ export function ExpenseForm({ editingId, onEditComplete }: ExpenseFormProps) {
           <Label htmlFor="date" className="text-slate-300">
             Date
           </Label>
-          <Input
-            id="date"
-            placeholder="DD/MM/YYYY"
-            value={formData.date}
-            onChange={handleDateChange}
-            maxLength="10"
-            className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500/20 transition-colors"
-          />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full bg-slate-700 border-slate-600 text-white hover:bg-slate-600 hover:text-white justify-start text-left font-normal"
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {formData.date}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 bg-slate-700 border-slate-600" align="start">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={handleDateSelect}
+                disabled={(date) => date > new Date()}
+                className="bg-slate-700"
+              />
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
