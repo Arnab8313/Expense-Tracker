@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { ExpenseProvider } from "@/context/expense-context"
+import { RemindersProvider } from "@/context/reminders-context"
 import { Dashboard } from "@/components/dashboard"
+import { RemindersNotifier } from "@/components/reminders-notifier"
 
 export default function Home() {
   const [mounted, setMounted] = useState(false)
@@ -14,8 +16,11 @@ export default function Home() {
   if (!mounted) return null
 
   return (
-    <ExpenseProvider>
-      <Dashboard />
-    </ExpenseProvider>
+    <RemindersProvider>
+      <ExpenseProvider>
+        <Dashboard />
+        <RemindersNotifier />
+      </ExpenseProvider>
+    </RemindersProvider>
   )
 }

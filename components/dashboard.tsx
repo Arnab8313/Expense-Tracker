@@ -7,6 +7,7 @@ import { ExpenseList } from "./expense-list"
 import { SummaryCards } from "./summary-cards"
 import { CategoryChart } from "./category-chart"
 import { TrendChart } from "./trend-chart"
+import { RemindersDropdown } from "./reminders-dropdown"
 
 export function Dashboard() {
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -26,9 +27,12 @@ export function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-3 sm:p-6 md:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-1 sm:mb-2">Expense Tracker</h1>
-          <p className="text-sm sm:text-base text-slate-400">Manage your finances and track spending habits</p>
+        <div className="mb-6 sm:mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-1 sm:mb-2">Expense Tracker</h1>
+            <p className="text-sm sm:text-base text-slate-400">Manage your finances and track spending habits</p>
+          </div>
+          <RemindersDropdown />
         </div>
 
         {/* Summary Cards */}
